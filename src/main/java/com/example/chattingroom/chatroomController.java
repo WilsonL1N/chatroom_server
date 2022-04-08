@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rooms")
 public class chatroomController {
     private List<Room> rooms;
+    private int roomId=0;
 
     // @Autowired
     // private MsgWebSocketService socketservice;
@@ -28,6 +29,18 @@ public class chatroomController {
     @RequestMapping(value="/getRooms", method=RequestMethod.GET)
     public ResponseEntity<?> getRooms() {
         return ResponseEntity.status(HttpStatus.OK).body(this.rooms);
+    }
+
+    @RequestMapping(value="/delRoom", method=RequestMethod.GET)
+    public ResponseEntity<?> delRooms(@RequestParam("roomId") int roomId) {
+        for (Room i : rooms) {
+            if (i.getRoomId() == roomId) {
+                rooms.remove(i);
+                System.out.println(rooms.size());
+                return ResponseEntity.status(HttpStatus.OK).body("ok");
+            }
+        }
+        return null;
     }
 
     @RequestMapping(value="/checkRoomName", method=RequestMethod.GET)
@@ -53,8 +66,8 @@ public class chatroomController {
                 return ResponseEntity.status(HttpStatus.OK).body(res);
             }
         }
-        int id = rooms.size() + 1;
-        room.setRoomId(id);
+        this.roomId ++;
+        room.setRoomId(this.roomId);
         if (room.getPassword().length()==0) {
             room.setPrivate(false);
         } else {
@@ -63,7 +76,7 @@ public class chatroomController {
         rooms.add(room);
         res.put("status", "0");
         res.put("msg","Success");
-        res.put("roomId", Integer.toString(id));
+        res.put("roomId", Integer.toString(room.getRoomId()));
         return ResponseEntity.status(HttpStatus.OK).body(res);
     }
 
